@@ -68,11 +68,12 @@ exec:del /S /Q C:\Users\*\Documents
 ---
 MITRE ATT&CK Mapping
 
-Technique	| ID
-Command Execution	| T1059
-Data from Local File	| T1005
-Obfuscated Files	| T1027
-Startup Persistence	| T1547.001
+| Technique              | ID         |
+|------------------------|------------|
+| Command Execution      | T1059      |
+| Data from Local File   | T1005      |
+| Obfuscated Files       | T1027      |
+| Startup Persistence    | T1547.001  |
 ---
  **Legal Disclaimer**
 
