@@ -15,14 +15,13 @@ def encrypt_payload(payload):
     return base64.b64encode(encrypted).decode()
 
 def embed_png(input_image, output_image, secret_data):
-    # Encrypt the payload first
+    
     encrypted_data = encrypt_payload(secret_data)
     encrypted_data += "EOF"
     binary_data = ''.join([format(ord(i), '08b') for i in encrypted_data])
 
     img = Image.open(input_image)
-    if img.mode != 'RGB':
-        img = img.convert('RGB')
+    if img.mode != 'RGB':img = img.convert('RGB')
 
     pixels = list(img.getdata())
     new_pixels = []
@@ -43,7 +42,7 @@ def embed_png(input_image, output_image, secret_data):
 
     img.putdata(new_pixels)
     img.save(output_image)
-    print(f"[✅] Embed tugadi: {output_image}")
+    print(f"Embed completed: {output_image}")
 
 from mutagen.id3 import ID3, COMM, ID3NoHeaderError
 
@@ -52,25 +51,21 @@ def embed_mp3(input_file, output_file, secret_data):
     encrypted_data = encrypt_payload(secret_data)
     
     shutil.copy(input_file, output_file)
-    try:
-        audio = ID3(output_file)
-    except ID3NoHeaderError:
-        audio = ID3()
+    try:audio = ID3(output_file)
+    except ID3NoHeaderError:audio = ID3()
     audio.add(COMM(encoding=3, lang='eng', desc='desc', text=encrypted_data))
     audio.save(output_file)
-    print(f"[✅ MP3] Yashirish tugadi: {output_file}")
+    print(f"MP3 Hiding completed: {output_file}")
 
 
 def embed_mp4(input_file, output_file, secret_data):
     # Encrypt the payload first
     encrypted_data = encrypt_payload(secret_data)
     
-    with open(input_file, "rb") as f:
-        content = f.read()
+    with open(input_file, "rb") as f:content = f.read()
     tag = f"HIDDEN_CMD:{encrypted_data}".encode()
-    with open(output_file, "wb") as f:
-        f.write(content + tag)
-    print(f"[✅ MP4] Yashirish tugadi: {output_file}")
+    with open(output_file, "wb") as f:f.write(content + tag)
+    print(f"MP4 Hiding completed: {output_file}")
 
 
 import argparse
