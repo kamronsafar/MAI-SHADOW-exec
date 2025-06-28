@@ -1,0 +1,5 @@
+pycryptodome>=3.15.0
+Pillow>=9.0.0
+mutagen>=1.45.0
+watchdog>=2.1.0
+numpy>=1.21.0 

