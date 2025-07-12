@@ -8,7 +8,7 @@ from watchdog.events import FileSystemEventHandler
 from PIL import Image
 import time
 
-#  AES konfiguratsiya
+###  AES konfiguratsiya 
 KEY = b"1234567812345678"
 
 WATCH_DIRS = [

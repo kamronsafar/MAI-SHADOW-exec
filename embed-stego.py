@@ -3,7 +3,7 @@ from PIL import Image
 import shutil
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
-
+##
 KEY = b"1234567812345678"
 
 def encrypt_payload(payload):
