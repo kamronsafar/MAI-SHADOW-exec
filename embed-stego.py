@@ -4,11 +4,10 @@ import shutil
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad
 
-# AES key (must match danger.py)
 KEY = b"1234567812345678"
 
 def encrypt_payload(payload):
-    """Encrypt payload with AES and return base64"""
+    ################Encrypt payload with AES and return base64#################
     cipher = AES.new(KEY, AES.MODE_ECB)
     padded_data = pad(payload.encode(), AES.block_size)
     encrypted = cipher.encrypt(padded_data)
@@ -108,7 +107,7 @@ def main():
     if ftype.lower() == "png":embed_png(infile, outfile, secret)
     elif ftype.lower() == "mp3":embed_mp3(infile, outfile, secret)
     elif ftype.lower() == "mp4":embed_mp4(infile, outfile, secret)
-    else:print(" Not correct format . only: png, mp3, mp4")
+    else:print(" Not correct format oonly: png mp3 mp4")
 
 if __name__ == "__main__":
     main()
